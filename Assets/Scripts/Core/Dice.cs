@@ -29,7 +29,7 @@ namespace Core
 
             rb.useGravity = true;
             rb.isKinematic = false;
-            rb.velocity = state.force;
+            rb.AddForce(state.force, ForceMode.VelocityChange);
             rb.AddTorque(state.torque, ForceMode.VelocityChange);
         }
 

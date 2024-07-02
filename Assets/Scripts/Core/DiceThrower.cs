@@ -12,8 +12,12 @@ namespace Core
         [SerializeField] private ObjectPool objectPool;
         [SerializeField] private int simulationFrames = 400;
         [SerializeField] private Dice dicePrototype;
+        
+        [Header("Spawn parameters:")]
         [SerializeField] private Transform spawnPoint;
-        [SerializeField] private float spawnRadius;
+        [SerializeField] private float spawnRadius = 0.5f;
+        [SerializeField] private float maxForce = 25f;
+        [SerializeField] private float maxTorque = 50f;
 
         private readonly List<Dice> _dice = new();
         private readonly PhysicsSimulator _simulator = new();
@@ -70,35 +74,33 @@ namespace Core
 
         private DiceState CreateInitialDiceState()
         {
-            var t = transform;
-            var scale = t.localScale;
-            var position = t.position;
-
-            //Randomize X, Y, Z position in the bounding box
-            var x = position.x + Random.Range(-scale.x / 2, scale.x / 2);
-            var y = position.y + Random.Range(-scale.y / 2, scale.y / 2);
-            var z = position.z + Random.Range(-scale.z / 2, scale.z / 2);
-            var dicePosition = new Vector3(x, y, z);
+            var dicePosition = spawnPoint.position + Random.insideUnitSphere * spawnRadius;
 
             float GetRandomAngle() => Random.Range(0, 360);
-            x = GetRandomAngle();
-            y = GetRandomAngle();
-            z = GetRandomAngle();
+            var x = GetRandomAngle();
+            var y = GetRandomAngle();
+            var z = GetRandomAngle();
             var rotation = Quaternion.Euler(x, y, z);
 
-            float GetRandomForce() => Random.Range(0, 25);
+            float GetRandomForce() => Random.Range(0, maxForce);
             x = GetRandomForce();
             y = GetRandomForce();
             z = GetRandomForce();
             var force = new Vector3(x, -y, z);
 
-            float GetRandomTorque() => Random.Range(0, 50);
+            float GetRandomTorque() => Random.Range(0, maxTorque);
             x = GetRandomTorque();
             y = GetRandomTorque();
             z = GetRandomTorque();
             var torque = new Vector3(x, y, z);
 
             return new DiceState(dicePosition, rotation, force, torque);
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (spawnPoint == null) return;
+            Gizmos.DrawWireSphere(spawnPoint.position, spawnRadius);
         }
     }
 }
