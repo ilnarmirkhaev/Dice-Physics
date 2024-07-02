@@ -2,12 +2,14 @@
 using Cysharp.Threading.Tasks;
 using Data;
 using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace Core
 {
     public class DiceThrower : MonoBehaviour
     {
+        [SerializeField] private ObjectPool objectPool;
         [SerializeField] private int simulationFrames = 400;
         [SerializeField] private Dice dicePrototype;
         [SerializeField] private Transform spawnPoint;
@@ -53,15 +55,14 @@ namespace Core
         {
             foreach (var die in _dice)
             {
-                if (die == null) continue;
-                Destroy(die.gameObject);
+                objectPool.Release(die);
             }
 
             _dice.Clear();
 
             for (var i = 0; i < diceCount; i++)
             {
-                var die = Instantiate(dicePrototype);
+                var die = objectPool.Get(dicePrototype);
                 die.Setup(CreateInitialDiceState());
                 _dice.Add(die);
             }
