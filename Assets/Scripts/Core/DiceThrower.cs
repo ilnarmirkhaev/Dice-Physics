@@ -21,37 +21,28 @@ namespace Core
 
         private readonly List<Dice> _dice = new();
         private readonly PhysicsSimulator _simulator = new();
-        private readonly List<int> _diceResults = new();
 
         public void ThrowDice(int diceCount, int expectedResult)
         {
-            _diceResults.Clear();
             _simulator.StopAnyPlayingSimulation();
 
             // Simulate throwing dice and record
             InitializeDice(diceCount);
             _simulator.RecordSimulation(_dice, maxSimulationFrameCount);
 
-            // Store simulated results 
+            // Rotate dice visuals, so expected result comes out on top face
             foreach (var die in _dice)
             {
-                _diceResults.Add(die.GetRollResult());
+                die.RotateDiceVisuals(die.GetRollResult(), expectedResult);
             }
 
-            _simulator.ResetObjectsToInitialState();
-
-            // Rotate dice visuals, so expected result comes out on top face
-            for (var i = 0; i < _dice.Count; i++)
-            {
-                var die = _dice[i];
-                die.RotateDiceVisuals(_diceResults[i], expectedResult);
-            }
-
+            // Play simulation with rotated visuals for each dice
             _simulator.PlayRecordedSimulation(this.GetCancellationTokenOnDestroy());
         }
 
         private void InitializeDice(int diceCount)
         {
+            // Instantiate dice using object pool and add initial forces
             foreach (var die in _dice)
             {
                 objectPool.Release(die);

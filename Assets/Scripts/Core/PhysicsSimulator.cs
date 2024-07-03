@@ -37,9 +37,11 @@ namespace Core
 
         private async UniTask PlaySimulation(CancellationToken cancellationToken)
         {
-            // Turn off physics and move objects via Transforms
+            // Turn off physics and reset objects to initial state of simulation
             DisablePhysics(_recordables);
+            ResetObjectsToInitialState();
 
+            // Move objects via Transforms
             for (var i = 0; i < _frameCount; i++)
             {
                 for (var j = 0; j < _simulation.Count; j++)
@@ -108,7 +110,7 @@ namespace Core
             }
         }
 
-        public void ResetObjectsToInitialState()
+        private void ResetObjectsToInitialState()
         {
             if (!_recordables.Any()) return;
 
