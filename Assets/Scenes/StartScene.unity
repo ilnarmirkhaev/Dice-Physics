@@ -899,7 +899,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
@@ -983,8 +983,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   objectPool: {fileID: 1624490944}
-  simulationFrames: 400
   dicePrototype: {fileID: 6041862358738883272, guid: 65c03affd94f1454ea591cf4ae5fbb05, type: 3}
+  maxSimulationFrameCount: 300
   spawnPoint: {fileID: 1344565292}
   spawnRadius: 0.75
   maxForce: 25
@@ -1197,10 +1197,6 @@ PrefabInstance:
       propertyPath: diceThrower
       value: 
       objectReference: {fileID: 2065005078}
-    - target: {fileID: 4159928451746270679, guid: e58983d05a04e4a4f8cb3251c8568b26, type: 3}
-      propertyPath: m_MaxValue
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 4739705512247925881, guid: e58983d05a04e4a4f8cb3251c8568b26, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
