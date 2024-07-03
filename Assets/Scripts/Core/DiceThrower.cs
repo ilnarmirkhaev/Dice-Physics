@@ -79,7 +79,7 @@ namespace Core
 
             float GetRandomForce() => Random.Range(-maxForce, maxForce);
             x = GetRandomForce();
-            y = GetRandomForce();
+            y = -Mathf.Abs(GetRandomForce()); // Throw dice down, not up
             z = GetRandomForce();
             var force = new Vector3(x, y, z);
 
