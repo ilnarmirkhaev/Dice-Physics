@@ -74,13 +74,13 @@ namespace Core
             var z = GetRandomAngle();
             var rotation = Quaternion.Euler(x, y, z);
 
-            float GetRandomForce() => Random.Range(0, maxForce);
+            float GetRandomForce() => Random.Range(-maxForce, maxForce);
             x = GetRandomForce();
             y = GetRandomForce();
             z = GetRandomForce();
-            var force = new Vector3(x, -y, z);
+            var force = new Vector3(x, y, z);
 
-            float GetRandomTorque() => Random.Range(0, maxTorque);
+            float GetRandomTorque() => Random.Range(-maxTorque, maxTorque);
             x = GetRandomTorque();
             y = GetRandomTorque();
             z = GetRandomTorque();
