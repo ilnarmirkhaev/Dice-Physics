@@ -64,5 +64,14 @@ namespace Core
             Quaternion rotation = Quaternion.FromToRotation(desiredTopLocal, currentTopLocal);
             diceVisuals.localRotation = rotation * diceVisuals.localRotation;
         }
+
+        private void OnDrawGizmos()
+        {
+            // Draw top face
+            var topFace = faces[GetRollResult() - 1];
+            var diceCenter = diceVisuals.position;
+            Gizmos.color = Color.red;
+            Gizmos.DrawRay(diceCenter, (topFace.position - diceCenter) * 2f);
+        }
     }
 }
