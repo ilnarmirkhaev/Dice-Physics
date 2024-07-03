@@ -23,14 +23,6 @@ namespace Core
         private readonly PhysicsSimulator _simulator = new();
         private readonly List<int> _diceResults = new();
 
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                ThrowDice(10, 3);
-            }
-        }
-
         public void ThrowDice(int diceCount, int expectedResult)
         {
             _diceResults.Clear();
