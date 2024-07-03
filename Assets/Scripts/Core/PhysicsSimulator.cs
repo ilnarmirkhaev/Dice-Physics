@@ -13,32 +13,31 @@ namespace Core
         private IReadOnlyList<IPhysicsRecordable> _recordables;
         private int _frameCount;
         private CancellationTokenSource _cts;
-        private UniTask _playSimulationTask;
 
-        public void StopRecordedSimulation()
-        {
-            _cts?.Cancel();
-        }
-
-        public void RecordSimulation(IReadOnlyList<IPhysicsRecordable> recordables, int frameCount)
+        public void RecordSimulation(IReadOnlyList<IPhysicsRecordable> recordables, int maxFrameCount)
         {
             _simulation.Clear();
             _recordables = recordables;
-            _frameCount = frameCount;
 
             EnablePhysics(recordables);
             SaveInitialState(recordables);
-            StartRecording(recordables, frameCount);
+            StartRecording(recordables, maxFrameCount);
         }
 
         public void PlayRecordedSimulation(CancellationToken token)
         {
             _cts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            _playSimulationTask = PlaySimulation(_cts.Token);
+            PlaySimulation(_cts.Token).Forget();
+        }
+
+        public void StopAnyPlayingSimulation()
+        {
+            _cts?.Cancel();
         }
 
         private async UniTask PlaySimulation(CancellationToken cancellationToken)
         {
+            // Turn off physics and move objects via Transforms
             DisablePhysics(_recordables);
 
             for (var i = 0; i < _frameCount; i++)
@@ -56,14 +55,19 @@ namespace Core
             }
         }
 
-        private void StartRecording(IReadOnlyList<IPhysicsRecordable> recordables, int frames)
+        private void StartRecording(IReadOnlyList<IPhysicsRecordable> recordables, int maxFrameCount)
         {
             Physics.simulationMode = SimulationMode.Script;
 
-            //Begin recording position and rotation for every frame
-            for (var i = 0; i < frames; i++)
+            var framesPassed = 0;
+
+            while (true)
             {
-                //For every gameObject
+                Physics.Simulate(Time.fixedDeltaTime);
+                var allDiceStopped = true;
+                framesPassed++;
+
+                // Record every frame of the simulation for each dice
                 for (var j = 0; j < recordables.Count; j++)
                 {
                     var recordable = recordables[j];
@@ -71,13 +75,26 @@ namespace Core
                     var position = t.position;
                     var rotation = t.rotation;
 
+                    if (!HasRigidbodyStopped(recordable.Rigidbody))
+                    {
+                        allDiceStopped = false;
+                    }
+
                     var frame = new SimulationFrame(position, rotation);
                     _simulation[j].Frames.Add(frame);
                 }
 
-                Physics.Simulate(Time.fixedDeltaTime);
+                // Stop recording when all dice stop or maxFrameCount is over the limit
+                if (allDiceStopped) break;
+
+                if (framesPassed >= maxFrameCount)
+                {
+                    Debug.LogError($"Max frame count of {maxFrameCount} was exceeded. Increase maxFrameCount");
+                    break;
+                }
             }
 
+            _frameCount = framesPassed;
             Physics.simulationMode = SimulationMode.FixedUpdate;
         }
 

@@ -21,7 +21,7 @@ namespace Core
             _transform = transform;
         }
 
-        public void Setup(DiceState state)
+        public void SetupAndAddForces(DiceState state)
         {
             _transform.position = state.position;
             _transform.rotation = state.rotation;
@@ -37,6 +37,7 @@ namespace Core
         {
             if (!faces.Any()) return -1;
 
+            // Get top face with highest Y coordinate
             var maxIndex = 0;
             for (var i = 1; i < faces.Count; i++)
             {
@@ -49,12 +50,12 @@ namespace Core
             return maxIndex + 1;
         }
 
-        public void RotateDiceVisuals(int fromResult, int expectedResult)
+        public void RotateDiceVisuals(int currentResult, int expectedResult)
         {
-            if (fromResult == expectedResult) return;
+            if (currentResult == expectedResult) return;
 
             // Directions from center to current and desired top sides
-            var currentTopLocal = diceVisuals.InverseTransformPoint(faces[fromResult - 1].position);
+            var currentTopLocal = diceVisuals.InverseTransformPoint(faces[currentResult - 1].position);
             var desiredTopLocal = diceVisuals.InverseTransformPoint(faces[expectedResult - 1].position);
 
             currentTopLocal.Normalize();

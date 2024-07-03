@@ -1197,6 +1197,10 @@ PrefabInstance:
       propertyPath: diceThrower
       value: 
       objectReference: {fileID: 2065005078}
+    - target: {fileID: 4159928451746270679, guid: e58983d05a04e4a4f8cb3251c8568b26, type: 3}
+      propertyPath: m_MaxValue
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4739705512247925881, guid: e58983d05a04e4a4f8cb3251c8568b26, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

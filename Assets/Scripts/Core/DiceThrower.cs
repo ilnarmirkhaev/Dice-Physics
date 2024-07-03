@@ -10,9 +10,9 @@ namespace Core
     public class DiceThrower : MonoBehaviour
     {
         [SerializeField] private ObjectPool objectPool;
-        [SerializeField] private int simulationFrames = 400;
         [SerializeField] private Dice dicePrototype;
-        
+        [SerializeField] private int maxSimulationFrameCount = 300;
+
         [Header("Spawn parameters:")]
         [SerializeField] private Transform spawnPoint;
         [SerializeField] private float spawnRadius = 0.5f;
@@ -26,11 +26,13 @@ namespace Core
         public void ThrowDice(int diceCount, int expectedResult)
         {
             _diceResults.Clear();
-            _simulator.StopRecordedSimulation();
+            _simulator.StopAnyPlayingSimulation();
 
-            GenerateDice(diceCount);
-            _simulator.RecordSimulation(_dice, simulationFrames);
+            // Simulate throwing dice and record
+            InitializeDice(diceCount);
+            _simulator.RecordSimulation(_dice, maxSimulationFrameCount);
 
+            // Store simulated results 
             foreach (var die in _dice)
             {
                 _diceResults.Add(die.GetRollResult());
@@ -38,6 +40,7 @@ namespace Core
 
             _simulator.ResetObjectsToInitialState();
 
+            // Rotate dice visuals, so expected result comes out on top face
             for (var i = 0; i < _dice.Count; i++)
             {
                 var die = _dice[i];
@@ -47,7 +50,7 @@ namespace Core
             _simulator.PlayRecordedSimulation(this.GetCancellationTokenOnDestroy());
         }
 
-        private void GenerateDice(int diceCount)
+        private void InitializeDice(int diceCount)
         {
             foreach (var die in _dice)
             {
@@ -59,7 +62,7 @@ namespace Core
             for (var i = 0; i < diceCount; i++)
             {
                 var die = objectPool.Get(dicePrototype);
-                die.Setup(CreateInitialDiceState());
+                die.SetupAndAddForces(CreateInitialDiceState());
                 _dice.Add(die);
             }
         }
